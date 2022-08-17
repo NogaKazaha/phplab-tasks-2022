@@ -17,7 +17,6 @@ class Strings implements StringsInterface {
         return preg_replace_callback(
             '/_(.)/',
             function($match) {
-                var_dump($match);
                 return strtoupper($match[self::ONE_INDEX]); // getting the char after _
             },
             $input

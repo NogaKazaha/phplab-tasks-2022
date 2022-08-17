@@ -60,8 +60,8 @@ class Basics implements BasicsInterface {
     public function isSumEqual(string $input): bool {
         $this->validator->isValidStringException($input);
         
-        $firstStr = substr($input, self::FIRST_THREE_START_INDEX, self::FIRST_THREE_END_INDEX);
-        $secondStr = substr($input, self::LAST_THREE_INDEX);
+        $firstStr = substr($input, self::FIRST_THREE_START_INDEX, self::FIRST_THREE_END_INDEX); // getting first three chars
+        $secondStr = substr($input, self::LAST_THREE_INDEX); // getting last three chars
 
         $firstSum = array_sum(str_split($firstStr));
         $secondSum = array_sum(str_split($secondStr));

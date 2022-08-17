@@ -3,19 +3,25 @@
 namespace strings;
 
 class Strings implements StringsInterface {
+    const ZERO_INDEX = 0;
+    const ONE_INDEX = 1;
+    const LAST_CHAR_INDEX = -1;
+    const ENC_1251 = 'windows-1251';
 
     /**
      * @param string $input
      * @return string
      */
     public function snakeCaseToCamelCase(string $input): string {
-        $input = explode('_', $input);
 
-        for ($i = 1; $i < count($input); $i++) {
-            $input[$i] = ucfirst($input[$i]);
-        }
-
-        return implode('', $input);
+        return preg_replace_callback(
+            '/_(.)/',
+            function($match) {
+                var_dump($match);
+                return strtoupper($match[self::ONE_INDEX]); // getting the char after _
+            },
+            $input
+        );
     }
 
     /**
@@ -25,19 +31,14 @@ class Strings implements StringsInterface {
     public function mirrorMultibyteString(string $input): string {
         $input = explode(' ', $input);
 
-        foreach($input as $key => $value) {
+        $result = array_map(function($value) {
             $encoding = mb_detect_encoding($value);
-            $length   = mb_strlen($value, $encoding);
-            $reversed = '';
+            $str = iconv($encoding, self::ENC_1251,$value);
+            $string = strrev($str);
+            return $str = iconv(self::ENC_1251, $encoding, $string);
+        }, $input);
 
-            while ($length-- > 0) {
-                $reversed .= mb_substr($value, $length, 1, $encoding);
-            }
-            
-            $input[$key] = $reversed;
-        }
-
-        return implode(' ', $input);
+        return implode(' ', $result);
     }
 
     /**
@@ -45,11 +46,11 @@ class Strings implements StringsInterface {
      * @return string
      */
     public function getBrandName(string $noun): string {
-        $firstLetter = mb_substr($noun, 0, 1);
-        $lastLetter  = mb_substr($noun, -1);
+        $firstLetter = mb_substr($noun, self::ZERO_INDEX, self::ONE_INDEX);  // getting first letter of noun
+        $lastLetter  = mb_substr($noun, self::LAST_CHAR_INDEX);              // getting last letter of noun
 
         if ($firstLetter === $lastLetter) {
-            return ucfirst(substr($noun, 0, -1) . $noun);
+            return ucfirst(substr($noun, self::ZERO_INDEX, self::LAST_CHAR_INDEX) . $noun);
         }
 
         return 'The ' . ucfirst($noun);

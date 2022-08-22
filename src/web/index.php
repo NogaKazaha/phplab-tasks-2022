@@ -1,8 +1,13 @@
 <?php
+
 require_once './functions.php';
 
 $airports = require './airports.php';
 
+$airports = filterByFirstLetter($airports);
+$airports = filterByState($airports);
+$airports = sortByParam($airports);
+$airports = paginate($airports);
 // Filtering
 /**
  * Here you need to check $_GET request if it has any filtering
@@ -53,7 +58,7 @@ $airports = require './airports.php';
         Filter by first letter:
 
         <?php foreach (getUniqueFirstLetters(require './airports.php') as $letter): ?>
-            <a href="#"><?= $letter ?></a>
+            <a href=<?= addParamsTouUrl("filter_by_first_letter=" . $letter) ?>><?= $letter ?></a>
         <?php endforeach; ?>
 
         <a href="/" class="float-right">Reset all filters</a>
@@ -72,10 +77,10 @@ $airports = require './airports.php';
     <table class="table">
         <thead>
         <tr>
-            <th scope="col"><a href="#">Name</a></th>
-            <th scope="col"><a href="#">Code</a></th>
-            <th scope="col"><a href="#">State</a></th>
-            <th scope="col"><a href="#">City</a></th>
+            <th scope="col"><a href=<?= addParamsTouUrl("sort=name") ?>>Name</a></th>
+            <th scope="col"><a href=<?= addParamsTouUrl("sort=code") ?>>Code</a></th>
+            <th scope="col"><a href=<?= addParamsTouUrl("sort=state") ?>>State</a></th>
+            <th scope="col"><a href=<?= addParamsTouUrl("sort=city") ?>>City</a></th>
             <th scope="col">Address</th>
             <th scope="col">Timezone</th>
         </tr>
@@ -95,7 +100,7 @@ $airports = require './airports.php';
         <tr>
             <td><?= $airport['name'] ?></td>
             <td><?= $airport['code'] ?></td>
-            <td><a href="#"><?= $airport['state'] ?></a></td>
+            <td><a href=<?= addParamsTouUrl("filter_by_state=" . implode('_', explode(' ', $airport['state']))) ?>><?= $airport['state'] ?></a></td>
             <td><?= $airport['city'] ?></td>
             <td><?= $airport['address'] ?></td>
             <td><?= $airport['timezone'] ?></td>
@@ -113,13 +118,20 @@ $airports = require './airports.php';
          - use page key (i.e. /?page=1)
          - when you apply pagination - all filters and sorting are not reset
     -->
-    <nav aria-label="Navigation">
-        <ul class="pagination justify-content-center">
-            <li class="page-item active"><a class="page-link" href="#">1</a></li>
-            <li class="page-item"><a class="page-link" href="#">2</a></li>
-            <li class="page-item"><a class="page-link" href="#">3</a></li>
-        </ul>
-    </nav>
+
+    <?php if($airports): ?>
+
+        <nav aria-label="Navigation">
+            <ul class="pagination justify-content-center">
+            <?php foreach(pagesRange() as $page): ?>
+                <li class="<?= activePage($page) ?>">
+                    <a class="page-link" href="<?= getPage($page) ?>"> <?= $page; ?></a>
+                </li>
+            <?php endforeach; ?>
+            </ul>
+        </nav>
+
+    <?php endif; ?>
 
 </main>
 </html>
